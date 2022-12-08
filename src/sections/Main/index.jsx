@@ -12,11 +12,19 @@ export const Main = () => {
     <Flex
       w="100%"
       h="100%"
-      px="20px"
       justifyContent="space-between"
       align="flex-start"
+      flex="1"
     >
-      <Flex flexDir="column" align="center" w="50%" position='relative'>
+      <Flex
+        flex="1"
+        h="100%"
+        flexDir="column"
+        align="center"
+        position="relative"
+        justifyContent="space-between"
+        pb='20px'
+      >
         <Flex>
           <Input
             p="5px"
@@ -25,6 +33,11 @@ export const Main = () => {
             onChange={(e) => setExpression(e.target.value)}
             w="200px"
             placeholder="Expressão"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleAddItem();
+              }
+            }}
           />
           <Button
             onClick={() => handleAddItem()}
@@ -34,14 +47,14 @@ export const Main = () => {
             <CheckIcon />
           </Button>
         </Flex>
-        <Flex w='100%' mt="50px">
+        <Flex w="100%" mt="50px" px="20px" position="relative">
           <Terminal />
         </Flex>
       </Flex>
-      <Center height="500px">
+      <Center height="100%">
         <Divider borderColor="teal" orientation="vertical" />
       </Center>
-      <Flex w="50%" justify="center">
+      <Flex flex="1" justify="center">
         <VariableDisplay />
       </Flex>
     </Flex>

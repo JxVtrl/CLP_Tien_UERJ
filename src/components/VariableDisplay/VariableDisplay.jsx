@@ -13,7 +13,7 @@ import {
 import { useApp } from "../../context";
 
 function VariableDisplay() {
-  const { variableList, setVariableList } = useApp();
+  const { variableList } = useApp();
 
   return (
     <Flex w="100%" px="10px" borderRadius="10px">
@@ -24,6 +24,7 @@ function VariableDisplay() {
               <Th textAlign="center">Expressão originária</Th>
               <Th textAlign="center">Variável</Th>
               <Th textAlign="center">Valor</Th>
+              <Th textAlign="center">Tipo</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -33,6 +34,7 @@ function VariableDisplay() {
                   <Td textAlign="center">{item.expression}</Td>
                   <Td textAlign="center">{item.variable}</Td>
                   <Td textAlign="center">{item.values}</Td>
+                  <Td textAlign="center">{item.type}</Td>
                 </Tr>
               ))}
           </Tbody>

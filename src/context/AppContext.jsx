@@ -20,6 +20,7 @@ export function AppProvider({ children }) {
       expression: "$valor /= 2",
       variable: "valor",
       values: "2",
+      type: "number",
     },
   ]);
 
@@ -130,12 +131,15 @@ export function AppProvider({ children }) {
     } else {
       if (expression.includes("$")) {
         // match way
-        const variableName = expression.match(/\$[a-zA-Z0-9]+/g);
+        // const variableName = expression.match(/\$[a-zA-Z0-9]+/g);
+        const variableName = expression.split(" ")[0].replace("$", "");
 
         const newItem = {
           id: variableList.length,
           expression: expression,
           variable: variableName,
+          values: eval(expression.split(" ")[2]),
+          type: checkValueType(expression.split(" ")[2]),
         };
         setVariableList((prev) => [...prev, newItem]);
       } else {

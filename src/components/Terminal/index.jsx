@@ -8,23 +8,18 @@ export const Terminal = () => {
   return (
     <Flex
       flexDir="column"
-      position="fixed"
       h="250px"
-      w="45%"
       p="15px"
-      bottom="20px"
-      mx='auto'
+      w="100%"
       color="#fff"
-      bgColor="rgba(0, 0, 0, 0.9)"
+      bgColor="rgba(0, 0, 0)"
       borderRadius="10px"
-      alignSelf="flex-end"
-      justifySelf="flex-end"
     >
-      <Text m="0 auto" textDecor="underline">
+      <Text color="#FFF" m="0 auto" textDecor="underline">
         Terminal
       </Text>
       <Divider m="10px 0" />
-      <Text>Resultado: {result}</Text>
+      <Text as='h2' color="#00D14E">{result}</Text>
     </Flex>
   );
 };
