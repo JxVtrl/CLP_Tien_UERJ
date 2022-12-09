@@ -42,4 +42,4 @@ A 1a linha define variaveis e expressões. As demais linhas definem valores asso
 
 2a linha: 5 'um pequeno texto'
 
-A 1a linha mostra cadeias fixas de caracter e a 2a linha variáveis que foram definidas previamente. Seus valores foram utilizados ṕara gerar a tabela final.)
+A 1a linha mostra cadeias fixas de caracter e a 2a linha variáveis que foram definidas previamente. Seus valores foram utilizados ṕara gerar a tabela final.)l

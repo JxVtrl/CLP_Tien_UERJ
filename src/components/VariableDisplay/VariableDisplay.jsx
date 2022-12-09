@@ -22,8 +22,8 @@ function VariableDisplay() {
           <Thead>
             <Tr>
               <Th textAlign="center">Expressão originária</Th>
-              <Th textAlign="center">Variável</Th>
-              <Th textAlign="center">Valor</Th>
+              <Th textAlign="center">Nome da Variável</Th>
+              <Th textAlign="center">Valor atribuído</Th>
               <Th textAlign="center">Tipo</Th>
             </Tr>
           </Thead>

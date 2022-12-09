@@ -19,7 +19,9 @@ export const Terminal = () => {
         Terminal
       </Text>
       <Divider m="10px 0" />
-      <Text as='h2' color="#00D14E">{result}</Text>
+    {result.map((item, index) => (
+      <Flex key={index}><Text color='green'>{item}</Text></Flex>
+    ))}
     </Flex>
   );
 };

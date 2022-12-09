@@ -10,10 +10,9 @@ import { useToast } from "@chakra-ui/react";
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
-  const [expression, setExpression] = useState("");
-  const [type, setType] = useState(undefined);
-  const [result, setResult] = useState(undefined);
   const toast = useToast();
+  const [expression, setExpression] = useState("");
+  const [result, setResult] = useState(["Marcelo"]);
   const [variableList, setVariableList] = useState([
     {
       id: 0,
@@ -24,91 +23,9 @@ export function AppProvider({ children }) {
     },
   ]);
 
-  const resetVariables = () => {
+  const resetStates = () => {
     setExpression("");
   };
-
-  // const checkValueType = (exp) => {
-  //   // O retorno desta função é o tipo do valor da variavel
-  //   // Se for string, tem que ter aspas simples, boolean, true ou false, number, só numeros
-
-  //   // Aspas simples englobando o valor
-  //   if (exp.includes("'")) {
-  //     alert("string");
-  //     return "string";
-  //   } else if (exp.includes("true") || exp.includes("false")) {
-  //     // Se tiver aspas simples é string
-  //     if (exp.includes("'")) {
-  //       alert("string");
-  //       return "string";
-  //     }
-
-  //     alert("boolean");
-  //     return "boolean";
-  //     // Chaves englobando o valor
-  //   } else if (exp.includes("{") && exp.includes("}")) {
-  //     // Se tiver aspas simples é string
-  //     if (exp.includes("'")) {
-  //       alert("string");
-  //       return "string";
-  //     }
-
-  //     if (exp.match(/[a-z]/i)) {
-  //       alert("error");
-  //       return "error";
-  //     } else alert("number");
-  //     return "number";
-  //   } else {
-  //     alert("error");
-  //     return null;
-  //   }
-  // };
-
-  // const checkExpOperator = (exp) => {
-  //   const operators = ["/=", "/p", "/l", "/t", "/r", "/i"];
-  //   switch (exp) {
-  //     // /= é o operador de atribuição
-  //     case exp.includes("/="):
-  //       console.log("entrou");
-  //       // O que tem antes é o nome da variavel
-  //       // O que vier depois é o valor, temos que ver o tipo (string, boolean, number)
-  //       // Se for string, tem que ter aspas simples, boolean, true ou false, number, só numeros
-
-  //       // Separar a expressão em duas partes
-  //       let expArray = exp.split(operators[0]);
-
-  //       // Verificar o tipo do valor resultado
-  //       let type = checkValueType(expArray[1]);
-
-  //       console.log(type);
-
-  //       break;
-
-  //     // /p é o operador de print no terminal
-  //     case exp.includes(operators[1]):
-  //       break;
-
-  //     // /l é o operador de definição de lista
-  //     case exp.includes(operators[2]):
-  //       break;
-
-  //     // /t é o operador de definição de tabela
-  //     case exp.includes(operators[3]):
-  //       break;
-
-  //     // /r é o operador de repetição
-  //     case exp.includes(operators[4]):
-  //       break;
-
-  //     // /i é o ternário
-  //     case exp.includes(operators[5]):
-  //       break;
-
-  //     default:
-  //       break;
-  //   }
-  // };
-
 
   const handleAddItem = () => {
     if (!expression) {
@@ -120,27 +37,51 @@ export function AppProvider({ children }) {
         isClosable: true,
       });
     } else {
+      // check if first character is /
+      // if (expression[0] === "/"){
+      //   switch (expression) {
+      //     case "/i" || "/I":
+      //       ...
+      //       break;
+
+      //     case "/t" || "/T":
+      //       ...
+      //       break;
+
+      //     case "/r" || "/R":
+      // ...
+      // break;
+
+      //      case "/l" || "L":
+      //          ...
+      //         break;
+      //   }
+      // }
+
+      // caso o usuario entre com uma variavel
       if (expression.includes("$")) {
         const variableName = expression.split(" ")[0].replace("$", "");
 
-        if (expression.includes('/=')) {
+        // se existir uma atribuição
+        if (expression.includes("/=")) {
           // split expression
-          const expressionArray = expression.split('/=');
+          const expressionArray = expression.split("/=");
 
           // get value and check type
           const value = expressionArray[1];
 
           // process value
-          if (value.includes('{') && value.includes('}')) { // se o usuario entrar com { }
-            const valueSemAsChaves = value.replace('{', '').replace('}', '') // tirou as chaves
+          if (value.includes("{") && value.includes("}")) {
+            // se o usuario entrar com { }
+            const valueSemAsChaves = value.replace("{", "").replace("}", ""); // tirou as chaves
 
-            let newItem = {}
+            let newItem = {};
 
             // identificar se o que tem dentro das chaves é uma string ou um numero
             if (valueSemAsChaves.includes("'")) {
               // se tiver aspas simples, é string
-              const valueSemAspas = valueSemAsChaves.replace("'", "")
-                 // tirou as aspas
+              const valueSemAspas = valueSemAsChaves.replace("'", "");
+              // tirou as aspas
               const valueType = "string";
               // create new item
               newItem = {
@@ -150,7 +91,10 @@ export function AppProvider({ children }) {
                 values: valueSemAspas,
                 type: valueType,
               };
-            } else if (valueSemAsChaves.includes("true") || valueSemAsChaves.includes("false")) {
+            } else if (
+              valueSemAsChaves.includes("true") ||
+              valueSemAsChaves.includes("false")
+            ) {
               // se tiver true ou false, é boolean
               const valueType = "boolean";
               // create new item
@@ -175,8 +119,10 @@ export function AppProvider({ children }) {
             }
 
             // check if variable already exists
-            const variableExists = variableList.find((item) => item.variable === variableName);
-              
+            const variableExists = variableList.find(
+              (item) => item.variable === variableName
+            );
+
             if (variableExists) {
               // if variable exists, update it
               const updatedList = variableList.map((item) => {
@@ -191,9 +137,6 @@ export function AppProvider({ children }) {
               // if variable doesn't exist, create it
               setVariableList([...variableList, newItem]);
             }
-
-
-
           } else if (value.includes("'")) {
             // se tiver aspas simples, é string
             const valueSemAspas = value.replace("'", "").replace("'", ""); // tirou as aspas
@@ -208,7 +151,9 @@ export function AppProvider({ children }) {
             };
 
             // check if variable already exists
-            const variableExists = variableList.find((item) => item.variable === variableName);
+            const variableExists = variableList.find(
+              (item) => item.variable === variableName
+            );
 
             if (variableExists) {
               // if variable exists, update it
@@ -226,14 +171,95 @@ export function AppProvider({ children }) {
             }
           }
         } else {
-          const expressionReplace = expression.replace(/[^-()\d/*+.]/g, '');
-          const result = eval(expressionReplace);
-          setResult(result);
+          // caso o usuario entre só com o nome de uma variavel ja existente, imprimir no terminal
+          if (expression.includes(" ")) {
+            const expressionReplace = expression.replace(/[^-()\d/*+.]/g, "");
+            const finalResult = eval(expressionReplace);
+            setResult([...result, finalResult]);
+          } else {
+            const variable = expression.replace("$", "");
+
+            // Checkar se a variavel exister
+            const variableFound = variableList.find((element) => {
+              return element.variable === variable;
+            });
+
+            // Se já exister a variavel, imprimir no terminal
+            if (variableFound) {
+              setResult([...result, variableFound.values]);
+            }
+          }
         }
+      } else {
+          if (expression[0] === "/") {
+            console.log('oi')
+
+            const operator = expression.slice(0,2);
+            console.log(operator)
+
+
+            switch (operator) {
+              case "/i" || "/I":
+                
+                break;
+
+              case "/t" || "/T":
+                break;
+
+              case "/r" || "/R":
+                // separar os 2 parametros enviados apos o /r
+                // retirar o /r
+                console.log('oi')
+                const expressionReplace = expression.replace("/r", "");
+                const expressionReplaceKeys = expressionReplace.replace("{", "").replace("}", "");
+                // separar os 2 parametros
+                const expressionArray = expressionReplaceKeys.split(":");
+                const Repetition = expressionArray[0];
+                const variableValue = expressionArray[1];
+                const resultRepetition =  variableValue.repeat(Repetition).replaceAll("'", '').replaceAll('"', '');
+                setResult([...result, resultRepetition]);
+                break;
+
+              case "/l" || "L":
+                break;
+
+                case "/p" || "/P":
+
+                  // separar os 2 parametros enviados apos o /p
+                  // retirar o /p
+                  const expressionReplaceP = expression.replace("/p", "");
+                  const expressionReplaceKeysP = expressionReplaceP.replace("{", "").replace("}", "");
+                  // separar os 2 parametros
+                  const expressionArrayP = expressionReplaceKeysP.split(":");
+                  
+                  let resultPStyled = '';
+                  const variableValueP = expressionArrayP[1];
+
+                  if(expressionArrayP[0] === "bold") {
+                     resultPStyled = <span style={{ fontWeight: "bold" }}>{variableValueP}</span>;;
+                  } else if(expressionArrayP[0] === "italic") {
+                     resultPStyled = <span style={{ fontStyle: "italic" }}>{variableValueP}</span>;;
+                  } else if(expressionArrayP[0] === "underline") {
+                     resultPStyled = <span style={{ textDecoration: "underline" }}>{variableValueP}</span>;;
+                  }
+
+                  // o primeiro parametro é o estilo
+                  // o segundo parametro é o valor da variavel
+
+
+                  // const resultPStyled =  variableValueP.repeat(styleP).replaceAll("'", '').replaceAll('"', '');
+                  setResult([...result, resultPStyled]);
+                  break;
+            }
+          } else {
+            const expressionReplace = expression.replace(/[^-()\d/*+.]/g, "");
+            const finalResult = eval(expressionReplace);
+            setResult([...result, finalResult]);
+          }
       }
     }
 
-    resetVariables();
+    resetStates();
   };
 
   const value = {
@@ -243,7 +269,7 @@ export function AppProvider({ children }) {
     setExpression,
     expression,
     result,
-    setResult
+    setResult,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
