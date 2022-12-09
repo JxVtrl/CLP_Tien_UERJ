@@ -94,12 +94,6 @@ const ModalInstructions = ({ isOpen, onClose }) => {
             </Flex>
           </List>
         </ModalBody>
-
-        <ModalFooter>
-          <Button _hover={{ bgColor: "red.500" }} onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

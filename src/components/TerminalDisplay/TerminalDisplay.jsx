@@ -1,12 +1,13 @@
-import React from 'react';
+import React from "react";
 import { Flex, Text, Divider } from "@chakra-ui/react";
 import { useApp } from "../../context";
 function TerminalDisplay() {
-  const { result } = useApp()
-  
+  const { result } = useApp();
+
   return (
     <Flex
       flexDir="column"
+      overflow="auto"
       h="250px"
       p="15px"
       w="100%"
@@ -19,7 +20,7 @@ function TerminalDisplay() {
       </Text>
       <Divider m="10px 0" />
       {result.map((item, index) => (
-        <Flex key={index}>
+        <Flex overflowY="visible" h="100%" key={index}>
           <Text color="green">{item}</Text>
         </Flex>
       ))}

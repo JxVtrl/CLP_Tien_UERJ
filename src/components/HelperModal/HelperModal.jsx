@@ -22,10 +22,9 @@ function HelperModal() {
       size='xl'
     >
       <DrawerOverlay />
-      <DrawerContent w>
+      <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Examples</DrawerHeader>
-
+        <DrawerHeader>Exemplos p/ copiar</DrawerHeader>
         <DrawerBody>
           <ExampleTable />
         </DrawerBody>
