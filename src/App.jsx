@@ -3,7 +3,7 @@ import { Flex, useDisclosure } from "@chakra-ui/react";
 import { Header } from "./sections/Header";
 import { Main } from "./sections/Main";
 import { InfoIcon } from "@chakra-ui/icons";
-import { ModalInstructions } from "./components";
+import { HelperModal, ModalInstructions } from "./components";
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -22,6 +22,7 @@ function App() {
         right="20px"
       />
       <ModalInstructions isOpen={isOpen} onClose={onClose} />
+      <HelperModal />
     </Flex>
   );
 }
