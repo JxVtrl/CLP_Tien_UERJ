@@ -27,6 +27,10 @@ export function AppProvider({ children }) {
     },
   ]);
 
+  useEffect(() => {
+    console.log(variableList);
+  }, [variableList]);
+
   const resetStates = () => {
     setExpression("");
   };
@@ -45,7 +49,7 @@ export function AppProvider({ children }) {
     } else {
       // caso o usuario entre com uma variavel
       if (expression[0] === "$") {
-        const variableName = expression.split("/=")[0].replace("$", "");
+        const variableName = expression.split("/=")[0].replace("$", "").replaceAll(" ", "");
 
         // se existir uma atribuição
         if (expression.includes("/=")) {
@@ -58,12 +62,15 @@ export function AppProvider({ children }) {
           // process value
           if (value.includes("{") && value.includes("}")) {
             // se o usuario entrar com { }
-            const valueSemAsChaves = value.replaceAll("{", "").replaceAll("}", ""); // tirou as chaves
+            const valueSemAsChaves = value
+              .replaceAll("{", "")
+              .replaceAll("}", ""); // tirou as chaves
 
             // identificar se o que tem dentro das chaves é uma string ou um numero
-            if (valueSemAsChaves.includes("'")) {
+            if (valueSemAsChaves.includes("'" || '"')) {
               // se tiver aspas simples, é string
-              const valueSemAspas = valueSemAsChaves.replaceAll("'", "");
+              const valueSemAspas = valueSemAsChaves.replaceAll("'" || '"', "");
+
               // create new item
               newItem = createNewVariable(
                 variableList.length,
@@ -90,7 +97,7 @@ export function AppProvider({ children }) {
                 variableList.length,
                 expression,
                 variableName,
-                valueSemAsChaves,
+                eval(valueSemAsChaves),
                 "number"
               );
             }
@@ -99,6 +106,8 @@ export function AppProvider({ children }) {
             const variableExists = variableList.find(
               (item) => item.variable === variableName
             );
+
+            console.log(variableList);
 
             if (variableExists) {
               // if variable exists, update it
@@ -152,7 +161,7 @@ export function AppProvider({ children }) {
               variableList.length,
               expression,
               variableName,
-              eval(value.replaceAll(' ','')),
+              eval(value.replaceAll(" ", "")),
               "number"
             );
 
@@ -184,7 +193,7 @@ export function AppProvider({ children }) {
           } else {
             const variable = expression.replace("$", "");
 
-            // Checkar se a variavel exister
+            // Checkar se a variavel existe
             const variableFound = variableList.find((element) => {
               return element.variable === variable;
             });
@@ -212,82 +221,92 @@ export function AppProvider({ children }) {
 
               const condition = splitExpression[0];
 
-              if(condition.includes('==')){
+              if (condition.includes("==")) {
                 // comparação de igualdade
                 const conditionArray = condition.split("==");
                 const value1 = conditionArray[0];
                 const value2 = conditionArray[1];
 
-                if(value1 === value2){
+                if (value1 === value2) {
                   // se for verdadeiro, executar o que esta dentro das chaves
                   const value = splitExpression[1];
-                  const valueSemAsChaves = value.replace("{", "").replace("}", "");
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
                   setResult([...result, valueSemAsChaves]);
-                }
-                else if(value1 !== value2){
+                } else if (value1 !== value2) {
                   // se for falso, executar o que esta dentro das chaves
                   const value = splitExpression[2];
-                  const valueSemAsChaves = value.replace("{", "").replace("}", "");
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
                   setResult([...result, valueSemAsChaves]);
                 }
-              }
-              else if(condition.includes('!==')){
+              } else if (condition.includes("!==")) {
                 // comparação de diferença
                 const conditionArray = condition.split("!==");
                 const value1 = conditionArray[0];
                 const value2 = conditionArray[1];
 
-                if(value1 !== value2){
+                if (value1 !== value2) {
                   // se for verdadeiro, executar o que esta dentro das chaves
                   const value = splitExpression[1];
-                  const valueSemAsChaves = value.replace("{", "").replace("}", "");
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
                   setResult([...result, valueSemAsChaves]);
-                }
-                else if(value1 === value2){
+                } else if (value1 === value2) {
                   // se for falso, executar o que esta dentro das chaves
                   const value = splitExpression[2];
-                  const valueSemAsChaves = value.replace("{", "").replace("}", "");
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
+                  setResult([...result, valueSemAsChaves]);
+                }
+              } else if (condition.includes(">")) {
+                // comparação de maior que
+                const conditionArray = condition.split(">");
+                const value1 = conditionArray[0];
+                const value2 = conditionArray[1];
+
+                if (value1 > value2) {
+                  // se for verdadeiro, executar o que esta dentro das chaves
+                  const value = splitExpression[1];
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
+                  setResult([...result, valueSemAsChaves]);
+                } else if (value1 <= value2) {
+                  // se for falso, executar o que esta dentro das chaves
+                  const value = splitExpression[2];
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
+                  setResult([...result, valueSemAsChaves]);
+                }
+              } else if (condition.includes("<")) {
+                // comparação de menor que
+                const conditionArray = condition.split("<");
+                const value1 = conditionArray[0];
+                const value2 = conditionArray[1];
+
+                if (value1 < value2) {
+                  // se for verdadeiro, executar o que esta dentro das chaves
+                  const value = splitExpression[1];
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
+                  setResult([...result, valueSemAsChaves]);
+                }
+                if (value1 >= value2) {
+                  // se for falso, executar o que esta dentro das chaves
+                  const value = splitExpression[2];
+                  const valueSemAsChaves = value
+                    .replace("{", "")
+                    .replace("}", "");
                   setResult([...result, valueSemAsChaves]);
                 }
               }
-                else if(condition.includes('>')){
-                  // comparação de maior que
-                  const conditionArray = condition.split(">");
-                  const value1 = conditionArray[0];
-                  const value2 = conditionArray[1];
-
-                  if(value1 > value2){
-                    // se for verdadeiro, executar o que esta dentro das chaves
-                    const value = splitExpression[1];
-                    const valueSemAsChaves = value.replace("{", "").replace("}", "");
-                    setResult([...result, valueSemAsChaves]);
-                  }
-                  else if(value1 <= value2){
-                    // se for falso, executar o que esta dentro das chaves
-                    const value = splitExpression[2];
-                    const valueSemAsChaves = value.replace("{", "").replace("}", "");
-                    setResult([...result, valueSemAsChaves]);
-                  }
-                }
-                  else if(condition.includes('<')){
-                    // comparação de menor que
-                    const conditionArray = condition.split("<");
-                    const value1 = conditionArray[0];
-                    const value2 = conditionArray[1];
-
-                    if(value1 < value2){
-                      // se for verdadeiro, executar o que esta dentro das chaves
-                      const value = splitExpression[1];
-                      const valueSemAsChaves = value.replace("{", "").replace("}", "");
-                      setResult([...result, valueSemAsChaves]);
-                    }
-                    if(value1 >= value2){
-                    // se for falso, executar o que esta dentro das chaves
-                      const value = splitExpression[2];
-                      const valueSemAsChaves = value.replace("{", "").replace("}", "");
-                      setResult([...result, valueSemAsChaves]);
-                    }
-                  }
               break;
 
             case "/t" || "/T":
@@ -350,7 +369,9 @@ export function AppProvider({ children }) {
           }
         } else {
           const expressionReplace = expression.replace(/[^-()\d/*+.]/g, "");
+          console.log(expressionReplace);
           const finalResult = eval(expressionReplace);
+          console.log(finalResult);
           setResult([...result, finalResult]);
         }
       }
