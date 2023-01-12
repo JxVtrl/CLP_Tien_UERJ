@@ -9,6 +9,7 @@ import { useToast } from "@chakra-ui/react";
 import { createTextStyle } from "../helpers/createTextStyle";
 import { createNewVariable } from "../helpers/createNewVariable";
 import { createList } from "../helpers/createList";
+import { exampleList } from "../data/exampleList";
 
 const AppContext = createContext();
 
@@ -17,7 +18,7 @@ export function AppProvider({ children }) {
   const [helpBox, setHelpBox] = useState(false);
   const [expression, setExpression] = useState("");
   const [result, setResult] = useState([]);
-  const [saveVariables, setSaveVariables] = useState([])
+  const [history, setHistory] = useState([]);
   const [variableList, setVariableList] = useState([
     {
       id: 0,
@@ -27,87 +28,6 @@ export function AppProvider({ children }) {
       type: "number",
     },
   ]);
-  
-  const exampleList = [
-    {
-      id: 0,
-      type: "Atribuição Number 01",
-      expression: "$exemplo /= {2+3}",
-    },
-    {
-      id: 1,
-      type: "Atribuição Number 02",
-      expression: "$exemplo /= 2+3",
-    },
-    {
-      id: 2,
-      type: "Atribuição String 01",
-      expression: "$exemplo /= {'Exemplo'}",
-    },
-    {
-      id: 3,
-      type: "Atribuição String 02",
-      expression: "$exemplo /= 'Exemplo'",
-    },
-    {
-      id: 4,
-      type: "Atribuição String 03",
-      expression: "$exemplo /= '3 + 5'",
-    },
-    {
-      id: 5,
-      type: "Definição de um Paragrafo 01",
-      expression: "/P{bold|'Exemplo'}",
-    },
-    {
-      id: 6,
-      type: "Definição de um Paragrafo 02",
-      expression: "/P{italic|'Exemplo'}",
-    },
-    {
-      id: 7,
-      type: "Definição de um Paragrafo 03",
-      expression: "/P{underline|'Exemplo'}",
-    },
-    {
-      id: 8,
-      type: "Definição de um Paragrafo 03",
-      expression: "/P{underline|'Exemplo'}",
-    },
-    {
-      id: 9,
-      type: "Definição de uma lista 01",
-      expression: "/L{1|2|3|'teste'|5|'exemplo'|7|8|9|10}",
-    },
-    {
-      id: 10,
-      type: "Definição de uma lista 02",
-      expression: "$valor /= /l{1|2|3|4|5|6|7|8|9|10}",
-    },
-    {
-      id: 11,
-      type: "Definição de uma tabela 01",
-      expression: "/T{..|..}",
-    },
-    {
-      id: 12,
-      type: 'Definição de uma texto que será repetido "n" vezes',
-      expression: "/R{5|'Exemplo'}",
-    },
-    {
-      id: 13,
-      type: 'Definição de um ternário',
-      expression: "/I{2 < 3|'Exemplo verdadeiro'|'Exemplo falso'}",
-    }
-  ];
-
-  useEffect(() => {
-    console.log(variableList);
-  }, [variableList]);
-
-  const resetStates = () => {
-    setExpression("");
-  };
 
   const handleToast = ({ title, description, status }) => {
     toast({
@@ -139,6 +59,9 @@ export function AppProvider({ children }) {
         "warning"
       );
     } else {
+      // Salvar no Historico a expressão
+      setHistory([...history, expression]);
+
       // caso o usuario entre com uma variavel
       if (expression[0] === "$") {
         const variableName = expression
@@ -153,12 +76,9 @@ export function AppProvider({ children }) {
 
           // se expressão já existir, mostrar toast
           const variableNames = variableList.map((item) => item.variable);
-          console.log(variableNames);
 
           // se a expressao tiver algum valor de variableNames, usar o valor da variavel
           // se não, usar o valor digitado pelo usuario
-
-              
 
           // if(expression.contains())
 
@@ -321,79 +241,67 @@ export function AppProvider({ children }) {
         }
       } else {
         if (expression[0] === "/") {
-          const operator = expression.slice(0, 2);
+          const operator = expression
+            .slice(0, 2)
+            .replace(" ", "")
+            .toLowerCase();
+
+          const noOpExpression = expression.slice(2);
 
           switch (operator) {
-            case "/i" || "/I":
-              // retirar o /i
-              const replaceExpression = expression.replace("/i", "");
-              const splitExpression = replaceExpression
+            case "/i": // Working
+              const splitExpression = noOpExpression
                 .replace("{", "")
                 .replace("}", "")
                 .split("|");
 
               const condition = splitExpression[0];
 
+              let value;
+
               if (condition.includes("==")) {
                 // comparação de igualdade
                 const conditionArray = condition.split("==");
-
-                let value;
 
                 if (conditionArray[0] === conditionArray[1])
                   value = splitExpression[1].replace("{", "").replace("}", "");
                 else if (conditionArray[0] !== conditionArray[1])
                   value = splitExpression[2].replace("{", "").replace("}", "");
-
-                setResult([...result, value]);
               } else if (condition.includes("!==")) {
                 // comparação de diferença
                 const conditionArray = condition.split("!==");
-
-                let value;
 
                 if (conditionArray[0] !== conditionArray[1])
                   value = splitExpression[1].replace("{", "").replace("}", "");
                 else if (conditionArray[0] === conditionArray[1])
                   value = splitExpression[2].replace("{", "").replace("}", "");
-
-                setResult([...result, value]);
               } else if (condition.includes(">")) {
                 // comparação de maior que
                 const conditionArray = condition.split(">");
-
-                let value;
 
                 if (conditionArray[0] > conditionArray[1])
                   value = splitExpression[1].replace("{", "").replace("}", "");
                 else if (conditionArray[0] <= conditionArray[1])
                   value = splitExpression[2].replace("{", "").replace("}", "");
-
-                setResult([...result, value]);
               } else if (condition.includes("<")) {
                 // comparação de menor que
                 const conditionArray = condition.split("<");
-
-                let value;
 
                 if (conditionArray[0] < conditionArray[1])
                   value = splitExpression[1].replace("{", "").replace("}", "");
                 else if (conditionArray[0] >= conditionArray[1])
                   value = splitExpression[2].replace("{", "").replace("}", "");
-
-                setResult([...result, value]);
               }
+
+              setResult([...result, value]);
               break;
 
-            case "/t" || "/T":
+            case "/t": // Matheus
               break;
 
-            case "/r" || "/R":
-              // retirar o /r
-              const expressionReplace = expression.replace("/r", "");
-
+            case "/r": // Working
               // separar os 2 parametros
-              const expressionArray = expressionReplace
+              const expressionArray = noOpExpression
                 .replace("{", "")
                 .replace("}", "")
                 .split("|");
@@ -407,12 +315,9 @@ export function AppProvider({ children }) {
               setResult([...result, resultRepetition]);
               break;
 
-            case "/l" || "L":
-              // retirar o /l
-              const replacedExpression = expression.replace("/l", "");
-
+            case "/l": // Working
               // separar todos os parametros
-              const expressionSplited = replacedExpression
+              const expressionSplited = noOpExpression
                 .replace("{", "")
                 .replace("}", "")
                 .split("|");
@@ -425,15 +330,11 @@ export function AppProvider({ children }) {
               setResult([...result, orderedList]);
               break;
 
-            case "/p" || "/P":
-              // retirar o /p
-              const expressionReplaceP = expression
-                .replace("/p", "")
+            case "/p": // Working
+              // separar os parametros
+              const expressionArrayP = noOpExpression
                 .replace("{", "")
-                .replace("}", "");
-
-              // separar os 2 parametros
-              const expressionArrayP = expressionReplaceP
+                .replace("}", "")
                 .replaceAll("'", "")
                 .split("|");
 
@@ -444,18 +345,24 @@ export function AppProvider({ children }) {
 
               setResult([...result, resultPStyled]);
               break;
+
+            default:
+              handleToast(
+                "Operador não identificado",
+                "Desculpe mas não conseguimos identificar o operador da expressão",
+                "Error"
+              );
+              break;
           }
         } else {
           const expressionReplace = expression.replace(/[^-()\d/*+.]/g, "");
-          console.log(expressionReplace);
           const finalResult = eval(expressionReplace);
-          console.log(finalResult);
           setResult([...result, finalResult]);
         }
       }
     }
 
-    resetStates();
+    setExpression("");
   };
 
   const value = {
@@ -468,7 +375,9 @@ export function AppProvider({ children }) {
     setResult,
     setHelpBox,
     helpBox,
-    exampleList
+    exampleList,
+    setHistory,
+    history,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

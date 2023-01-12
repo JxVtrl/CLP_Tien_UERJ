@@ -15,10 +15,6 @@ import { useApp } from "../../context";
 function VariableDisplay() {
   const { variableList, setExpression, expression } = useApp();
 
-  // useEffect(() => {
-  //   console.log(variableList)
-  // }, [])
-
   const handleInputExpression = (id) => {
     if (variableList[id].expression !== undefined)
       setExpression(variableList[id].expression);

@@ -19,7 +19,7 @@ function TerminalDisplay() {
       </Text>
       <Divider m="10px 0" />
       {result.map((item, index) => (
-        <Flex overflowY="visible" h="100%" key={index}>
+        <Flex p="20px" overflowY="visible" key={index}>
           <Text color="green">{item}</Text>
         </Flex>
       ))}
