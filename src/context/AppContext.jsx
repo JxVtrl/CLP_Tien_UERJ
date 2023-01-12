@@ -17,6 +17,7 @@ export function AppProvider({ children }) {
   const [helpBox, setHelpBox] = useState(false);
   const [expression, setExpression] = useState("");
   const [result, setResult] = useState([]);
+  const [saveVariables, setSaveVariables] = useState([])
   const [variableList, setVariableList] = useState([
     {
       id: 0,
@@ -26,6 +27,79 @@ export function AppProvider({ children }) {
       type: "number",
     },
   ]);
+  
+  const exampleList = [
+    {
+      id: 0,
+      type: "Atribuição Number 01",
+      expression: "$exemplo /= {2+3}",
+    },
+    {
+      id: 1,
+      type: "Atribuição Number 02",
+      expression: "$exemplo /= 2+3",
+    },
+    {
+      id: 2,
+      type: "Atribuição String 01",
+      expression: "$exemplo /= {'Exemplo'}",
+    },
+    {
+      id: 3,
+      type: "Atribuição String 02",
+      expression: "$exemplo /= 'Exemplo'",
+    },
+    {
+      id: 4,
+      type: "Atribuição String 03",
+      expression: "$exemplo /= '3 + 5'",
+    },
+    {
+      id: 5,
+      type: "Definição de um Paragrafo 01",
+      expression: "/P{bold|'Exemplo'}",
+    },
+    {
+      id: 6,
+      type: "Definição de um Paragrafo 02",
+      expression: "/P{italic|'Exemplo'}",
+    },
+    {
+      id: 7,
+      type: "Definição de um Paragrafo 03",
+      expression: "/P{underline|'Exemplo'}",
+    },
+    {
+      id: 8,
+      type: "Definição de um Paragrafo 03",
+      expression: "/P{underline|'Exemplo'}",
+    },
+    {
+      id: 9,
+      type: "Definição de uma lista 01",
+      expression: "/L{1|2|3|'teste'|5|'exemplo'|7|8|9|10}",
+    },
+    {
+      id: 10,
+      type: "Definição de uma lista 02",
+      expression: "$valor /= /l{1|2|3|4|5|6|7|8|9|10}",
+    },
+    {
+      id: 11,
+      type: "Definição de uma tabela 01",
+      expression: "/T{..|..}",
+    },
+    {
+      id: 12,
+      type: 'Definição de uma texto que será repetido "n" vezes',
+      expression: "/R{5|'Exemplo'}",
+    },
+    {
+      id: 13,
+      type: 'Definição de um ternário',
+      expression: "/I{2 < 3|'Exemplo verdadeiro'|'Exemplo falso'}",
+    }
+  ];
 
   useEffect(() => {
     console.log(variableList);
@@ -35,26 +109,58 @@ export function AppProvider({ children }) {
     setExpression("");
   };
 
+  const handleToast = ({ title, description, status }) => {
+    toast({
+      title,
+      description,
+      status,
+      duration: 4000,
+      isClosable: true,
+    });
+  };
+
+  const handleUpdateVariable = (updated) => {
+    handleToast(
+      updated ? "Variavel atualizada." : "Variavel criada.",
+      updated
+        ? "A variavel foi atualizada com sucesso!"
+        : "A variavel foi criada com sucesso!",
+      "success"
+    );
+  };
+
   const handleAddItem = () => {
     let newItem = {};
 
     if (!expression) {
-      return toast({
-        title: "Nenhuma expressão.",
-        description: "Insira alguma expressão para ser processado",
-        status: "warning",
-        duration: 9000,
-        isClosable: true,
-      });
+      return handleToast(
+        "Nenhuma expressão.",
+        "Insira alguma expressão para ser processado",
+        "warning"
+      );
     } else {
       // caso o usuario entre com uma variavel
       if (expression[0] === "$") {
-        const variableName = expression.split("/=")[0].replace("$", "").replaceAll(" ", "");
+        const variableName = expression
+          .split("/=")[0]
+          .replace("$", "")
+          .replaceAll(" ", "");
 
         // se existir uma atribuição
         if (expression.includes("/=")) {
           // split expression
           const expressionArray = expression.split("/=");
+
+          // se expressão já existir, mostrar toast
+          const variableNames = variableList.map((item) => item.variable);
+          console.log(variableNames);
+
+          // se a expressao tiver algum valor de variableNames, usar o valor da variavel
+          // se não, usar o valor digitado pelo usuario
+
+              
+
+          // if(expression.contains())
 
           // get value and check type
           const value = expressionArray[1];
@@ -107,8 +213,6 @@ export function AppProvider({ children }) {
               (item) => item.variable === variableName
             );
 
-            console.log(variableList);
-
             if (variableExists) {
               // if variable exists, update it
               const updatedList = variableList.map((item) => {
@@ -119,9 +223,11 @@ export function AppProvider({ children }) {
               });
 
               setVariableList(updatedList);
+              handleUpdateVariable(true);
             } else if (newItem) {
               // if variable doesn't exist, create it
               setVariableList([...variableList, newItem]);
+              handleUpdateVariable(false);
             }
           } else if (value.includes("'")) {
             // se tiver aspas simples, é string
@@ -143,16 +249,17 @@ export function AppProvider({ children }) {
             if (variableExists) {
               // if variable exists, update it
               const updatedList = variableList.map((item) => {
-                if (item.variable === variableName) {
-                  return newItem;
-                }
+                if (item.variable === variableName) return newItem;
+
                 return item;
               });
 
               setVariableList(updatedList);
+              handleUpdateVariable(true);
             } else {
               // if variable doesn't exist, create it
               setVariableList([...variableList, newItem]);
+              handleUpdateVariable(false);
             }
 
             // se tiver apenas numero
@@ -179,9 +286,11 @@ export function AppProvider({ children }) {
               });
 
               setVariableList(updatedList);
+              handleUpdateVariable(true);
             } else {
               // if variable doesn't exist, create it
               setVariableList([...variableList, newItem]);
+              handleUpdateVariable(false);
             }
           }
         } else {
@@ -199,9 +308,15 @@ export function AppProvider({ children }) {
             });
 
             // Se já exister a variavel, imprimir no terminal
-            if (variableFound) {
-              setResult([...result, variableFound.values]);
-            }
+            if (variableFound) setResult([...result, variableFound.values]);
+
+            handleToast(
+              variableFound ? "Variable encontrada" : "Variável não encontrada",
+              variableFound
+                ? `O valor da variavel ${variable} é ${variableFound.values}`
+                : `A variável ${variable} não foi encontrada`,
+              variableFound ? "success" : "error"
+            );
           }
         }
       } else {
@@ -210,102 +325,63 @@ export function AppProvider({ children }) {
 
           switch (operator) {
             case "/i" || "/I":
-              // separar os 3 parametros enviados apos o /i entre as chaves
               // retirar o /i
               const replaceExpression = expression.replace("/i", "");
-              const replaceExpressionKeys = replaceExpression
+              const splitExpression = replaceExpression
                 .replace("{", "")
-                .replace("}", "");
-              // separar os 3 parametros
-              const splitExpression = replaceExpressionKeys.split("|");
+                .replace("}", "")
+                .split("|");
 
               const condition = splitExpression[0];
 
               if (condition.includes("==")) {
                 // comparação de igualdade
                 const conditionArray = condition.split("==");
-                const value1 = conditionArray[0];
-                const value2 = conditionArray[1];
 
-                if (value1 === value2) {
-                  // se for verdadeiro, executar o que esta dentro das chaves
-                  const value = splitExpression[1];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                } else if (value1 !== value2) {
-                  // se for falso, executar o que esta dentro das chaves
-                  const value = splitExpression[2];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                }
+                let value;
+
+                if (conditionArray[0] === conditionArray[1])
+                  value = splitExpression[1].replace("{", "").replace("}", "");
+                else if (conditionArray[0] !== conditionArray[1])
+                  value = splitExpression[2].replace("{", "").replace("}", "");
+
+                setResult([...result, value]);
               } else if (condition.includes("!==")) {
                 // comparação de diferença
                 const conditionArray = condition.split("!==");
-                const value1 = conditionArray[0];
-                const value2 = conditionArray[1];
 
-                if (value1 !== value2) {
-                  // se for verdadeiro, executar o que esta dentro das chaves
-                  const value = splitExpression[1];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                } else if (value1 === value2) {
-                  // se for falso, executar o que esta dentro das chaves
-                  const value = splitExpression[2];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                }
+                let value;
+
+                if (conditionArray[0] !== conditionArray[1])
+                  value = splitExpression[1].replace("{", "").replace("}", "");
+                else if (conditionArray[0] === conditionArray[1])
+                  value = splitExpression[2].replace("{", "").replace("}", "");
+
+                setResult([...result, value]);
               } else if (condition.includes(">")) {
                 // comparação de maior que
                 const conditionArray = condition.split(">");
-                const value1 = conditionArray[0];
-                const value2 = conditionArray[1];
 
-                if (value1 > value2) {
-                  // se for verdadeiro, executar o que esta dentro das chaves
-                  const value = splitExpression[1];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                } else if (value1 <= value2) {
-                  // se for falso, executar o que esta dentro das chaves
-                  const value = splitExpression[2];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                }
+                let value;
+
+                if (conditionArray[0] > conditionArray[1])
+                  value = splitExpression[1].replace("{", "").replace("}", "");
+                else if (conditionArray[0] <= conditionArray[1])
+                  value = splitExpression[2].replace("{", "").replace("}", "");
+
+                setResult([...result, value]);
               } else if (condition.includes("<")) {
                 // comparação de menor que
                 const conditionArray = condition.split("<");
-                const value1 = conditionArray[0];
-                const value2 = conditionArray[1];
 
-                if (value1 < value2) {
-                  // se for verdadeiro, executar o que esta dentro das chaves
-                  const value = splitExpression[1];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                }
-                if (value1 >= value2) {
-                  // se for falso, executar o que esta dentro das chaves
-                  const value = splitExpression[2];
-                  const valueSemAsChaves = value
-                    .replace("{", "")
-                    .replace("}", "");
-                  setResult([...result, valueSemAsChaves]);
-                }
+                let value;
+
+                if (conditionArray[0] < conditionArray[1])
+                  value = splitExpression[1].replace("{", "").replace("}", "");
+                else if (conditionArray[0] >= conditionArray[1])
+                  value = splitExpression[2].replace("{", "").replace("}", "");
+
+                setResult([...result, value]);
               }
               break;
 
@@ -313,55 +389,57 @@ export function AppProvider({ children }) {
               break;
 
             case "/r" || "/R":
-              // separar os 2 parametros enviados apos o /r
               // retirar o /r
               const expressionReplace = expression.replace("/r", "");
-              const expressionReplaceKeys = expressionReplace
-                .replace("{", "")
-                .replace("}", "");
+
               // separar os 2 parametros
-              const expressionArray = expressionReplaceKeys.split("|");
-              const Repetition = expressionArray[0];
-              const variableValue = expressionArray[1];
-              const resultRepetition = variableValue
-                .repeat(Repetition)
+              const expressionArray = expressionReplace
+                .replace("{", "")
+                .replace("}", "")
+                .split("|");
+
+              // remover aspas e repetir
+              const resultRepetition = expressionArray[1]
+                .repeat(expressionArray[0])
                 .replaceAll("'", "")
                 .replaceAll('"', "");
+
               setResult([...result, resultRepetition]);
               break;
 
             case "/l" || "L":
               // retirar o /l
               const replacedExpression = expression.replace("/l", "");
-              const replacedExpressionKeys = replacedExpression
-                .replace("{", "")
-                .replace("}", "");
+
               // separar todos os parametros
-              const expressionSplited = replacedExpressionKeys.split("|");
+              const expressionSplited = replacedExpression
+                .replace("{", "")
+                .replace("}", "")
+                .split("|");
 
-              const listStyle = expressionSplited[0];
-              const itemList = expressionSplited.slice(1);
+              const orderedList = createList(
+                expressionSplited[0],
+                expressionSplited.slice(1)
+              );
 
-              // verificar o listStyle
-
-              const orderedList = createList(listStyle, itemList);
               setResult([...result, orderedList]);
               break;
 
             case "/p" || "/P":
               // retirar o /p
-              const expressionReplaceP = expression.replace("/p", "");
-              const expressionReplaceKeysP = expressionReplaceP
+              const expressionReplaceP = expression
+                .replace("/p", "")
                 .replace("{", "")
                 .replace("}", "");
-              // separar os 2 parametros
-              const expressionArrayP = expressionReplaceKeysP.split("|");
 
-              const variableValueP = expressionArrayP[1].replaceAll("'", "");
+              // separar os 2 parametros
+              const expressionArrayP = expressionReplaceP
+                .replaceAll("'", "")
+                .split("|");
 
               let resultPStyled = createTextStyle(
                 expressionArrayP[0],
-                variableValueP
+                expressionArrayP[1]
               );
 
               setResult([...result, resultPStyled]);
@@ -390,6 +468,7 @@ export function AppProvider({ children }) {
     setResult,
     setHelpBox,
     helpBox,
+    exampleList
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

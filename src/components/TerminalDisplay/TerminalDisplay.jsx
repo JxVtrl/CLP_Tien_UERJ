@@ -10,7 +10,6 @@ function TerminalDisplay() {
       overflow="auto"
       h="250px"
       p="15px"
-      w="100%"
       color="#fff"
       bgColor="rgba(0, 0, 0)"
       borderRadius="10px"

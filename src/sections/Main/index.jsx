@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import { Flex, Input, Button, Center, Divider, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Input,
+  Button,
+  Center,
+  Divider,
+  Text,
+  Grid,
+} from "@chakra-ui/react";
 import { CheckIcon, QuestionOutlineIcon } from "@chakra-ui/icons";
 import {
   VariableDisplay,
-  ExampleTable,
   TerminalDisplay,
+  HistoryDisplay,
 } from "../../components";
 import { useApp } from "../../context";
 
@@ -13,15 +21,9 @@ export const Main = () => {
     useApp();
 
   return (
-    <Flex
-      w="100%"
-      h="100%"
-      justifyContent="space-between"
-      align="flex-start"
-      flex="1"
-    >
+    <Grid gridTemplateColumns={"1fr 0.01fr 1fr"} overflow='hidden'>
       <Flex
-        flex="1"
+        w="100%"
         h="100%"
         flexDir="column"
         align="center"
@@ -38,7 +40,7 @@ export const Main = () => {
             <QuestionOutlineIcon boxSize={5} />
           </Button>
 
-          <Flex w="100%" gap="20px" maxW={"600px"} mr="20px">
+          <Flex w="100%" gap="20px" maxW="600px" mr="20px">
             <Input
               w="100%"
               p="5px"
@@ -62,23 +64,33 @@ export const Main = () => {
           </Flex>
         </Flex>
         <Flex
-          direction="column"
           h="100%"
-          justify="space-between"
           w="100%"
+          direction="column"
           mt="50px"
           px="20px"
           position="relative"
+          gap="20px"
+          overflow="hidden"
         >
           <TerminalDisplay />
+          <HistoryDisplay />
         </Flex>
       </Flex>
+
       <Center height="100%">
         <Divider borderColor="teal" orientation="vertical" />
       </Center>
-      <Flex flex="1" justify="center">
+
+      <Flex
+        flex="1"
+        justify="center"
+        w="100%"
+        px="20px"
+        h='100%'
+      >
         <VariableDisplay />
       </Flex>
-    </Flex>
+    </Grid>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Flex,
   Table,
@@ -13,16 +13,25 @@ import {
 import { useApp } from "../../context";
 
 function VariableDisplay() {
-  const { variableList, setExpression } = useApp();
+  const { variableList, setExpression, expression } = useApp();
+
+  // useEffect(() => {
+  //   console.log(variableList)
+  // }, [])
 
   const handleInputExpression = (id) => {
-    setExpression(variableList[id].expression);
+    if (variableList[id].expression !== undefined)
+      setExpression(variableList[id].expression);
   };
 
   return (
-    <Flex w="100%" px="10px" borderRadius="10px">
+    <Flex
+      
+      w="100%"
+      borderRadius="10px"
+    >
       <TableContainer w="100%">
-        <Table variant="striped" w="100%">
+        <Table variant="striped" w="100%" overflow='scroll'>
           <Thead>
             <Tr>
               <Th textAlign="center">Expressão originária</Th>
@@ -39,7 +48,7 @@ function VariableDisplay() {
                     textAlign="center"
                     onClick={() => handleInputExpression(item.id)}
                     cursor="pointer"
-                    transition='all 0.3s linear'
+                    transition="all 0.3s linear"
                     _hover={{
                       backgroundColor: "#c6c6c6 !important",
                       fontWeight: 600,
