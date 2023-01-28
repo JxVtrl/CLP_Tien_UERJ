@@ -8,8 +8,11 @@ export const Header = () => {
         CLP - Tien
       </Text>
       <AvatarGroup>
-        <Avatar src={"/joao.jpeg"} />
-        <Avatar src={"/marcelo.jpeg"} />
+        <Avatar src={"/joao_vitral.jpeg"} />
+        <Avatar src={"/marcelo_bracet.jpeg"} />
+        <Avatar src={"/matteus_fermino.jpg"} />
+        <Avatar src={"/victor_hugo.jpg"} />
+        <Avatar src={"/joao_vitor.jpg"} />
         <Avatar src={"/matheus.jpg"} />
       </AvatarGroup>
     </Flex>
